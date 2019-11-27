@@ -513,7 +513,29 @@ class TimecardBackend {
             $this->echoFailedAuthenticationResponse();
     }
     
-    
+    function getAllEmployeesProjects(&$args) {
+        $fixedArgs = $this->fixArguments($args);
+        if ($this->verifyAdmin($fixedArgs->user_id, $fixedArgs->session_id, $fixedArgs->type) === true) {
+            $query = "SELECT ARRAY_TO_JSON(ARRAY_AGG(proj)) response FROM (
+            SELECT json_build_object('user_id', user_id, 'projects', ARRAY_TO_JSON(ARRAY_AGG(project_id)) ) proj FROM admin.project_user
+            GROUP BY user_id
+            )a";
+           
+            $result = $this->pgConn->fetchRawQueryResult($query);
+            $response = "";
+            if (pg_affected_rows($result) == 1) {
+                $row = pg_fetch_assoc($result); 
+                if ($row["response"] ==null)
+                    $row["response"] = "null";
+                $response =  '{"status":"success", "data":' .$row["response"] .'}';
+            }
+            else 
+                $response =  '{"status":"error", "message":"Employee is not associated with any projects"}';
+            $this->echoResponse($response);
+          }
+          else
+            $this->echoFailedAuthenticationResponse();
+    }
     
     function getCompanyOverheads(&$args) {
         $fixedArgs = $this->fixArguments($args);
@@ -738,6 +760,8 @@ FULL JOIN personel_expense g ON true;";
             $this->addExpenseToProject($args);
         else if ($args->action == "getemployeeprojectsbyadmin")
             $this->getEmployeeAvailableProjectsByAdmin($args);
+        else if ($args->action == "getallemployeesprojects")
+            $this->getAllEmployeesProjects($args);
         
     }
 }
@@ -838,7 +862,10 @@ $obj->addEmployeeExpenseToProject($addPersonnelExpenseToProjectArgs);
 $getEmployeeAvailableProjectsByAdminArgs = (object) ["action" => "getemployeeprojectsbyadmin","user_id" => 3, "session_id" => 'vrtmsup2ea3e1ui36f5dftt4sg', "type" => "admin", "request_user_id" => 5];
 $obj->getEmployeeAvailableProjectsByAdmin($getEmployeeAvailableProjectsByAdminArgs);
 */
-
+/*
+$getAllEmployeeAvailableProjectsArgs = (object) ["action" => "getallemployeesprojects","user_id" => 3, "session_id" => 'vrtmsup2ea3e1ui36f5dftt4sg', "type" => "admin"];
+$obj->getAllEmployeesProjects($getAllEmployeeAvailableProjectsArgs);
+*/
 /*
 echo json_encode($addCompanyArgs) ."\n";
 echo json_encode($deleteCompanyArgs) ."\n";
