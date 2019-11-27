@@ -49,22 +49,26 @@ mainapp.controller("usersCtrl",
   let objectFetchUsers = actions;
   objectFetchUsers["action"] = "getavailableemployees";
   
-  let assignProjectsToUsers = (userID) => {
-    let objectFetchProjects = actions;
-    objectFetchProjects["action"] = "getemployeeprojectsbyadmin";
-    objectFetchProjects["request_user_id"] = userID;
-    console.log(userID);
+  let assignProjectsToUsers = (objectFetchProjects) => {
+    
+   
+    console.log(objectFetchProjects);
     
     fetchUsers.getData(objectFetchProjects).then(function (response) {
+        console.log("here");
       console.log(response.data.data);
     });
   };
 
   fetchUsers.getData(objectFetchUsers).then(function (response) {
     $scope.users = response.data.data;
+    let objectFetchProjects = actions;
+     objectFetchProjects["action"] = "getemployeeprojectsbyadmin";
     
     for(let user of $scope.users) {
-      assignProjectsToUsers(user.uid);
+        objectFetchProjects["request_user_id"] = user.uid;
+        console.log("here", user.uid);
+      assignProjectsToUsers(objectFetchProjects);
     }
   });
 
