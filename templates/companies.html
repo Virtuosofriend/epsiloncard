@@ -1,0 +1,84 @@
+<div class="panel-content">
+  <div class="widget chat-wdgt pad50-40">
+    <h4 class="widget-title blue-bg">Companies List
+      <span class="float-right"><md-button class="md-icon-button w-100" ng-click="filter.show = !filter.show" aria-label="filter_list">
+        <md-icon md-font-icon="fas fa-ellipsis-v fa-lg color-white"></md-icon>
+      </md-button></span>
+    </h4>
+    <div class="caht-wrp">
+      <div class="chat-lst w-100">
+
+      <!-- Hidden Toolbar for search -->
+      <md-toolbar class="md-table-toolbar md-default" ng-show="filter.show" aria-hidden="false" style="">
+        <div class="md-toolbar-tools">
+
+          <form name="filter.form" class="ng-pristine ng-valid flex">
+            <md-input-container class="w-100">
+              <input ng-model="filter.search" ng-model-options="filter.options" placeholder="Search..." class="ng-pristine ng-untouched ng-valid" aria-invalid="false" type="text">
+            </md-input-container>
+          </form>
+          <md-button class="md-icon-button" ng-click="removeFilter();" aria-label="close">
+            <md-icon md-font-icon="fas fa-times fa-lg"></md-icon>
+          </md-button>
+        </div>
+      </md-toolbar>
+      <!-- end of hidden toolbar-->
+
+        <md-table-container>
+          <table md-table md-row-select="options.rowSelection" multiple="{{options.multiSelect}}" ng-model="selectedItems" md-progress="promise" class="table table-hover">
+            <thead md-head md-order="query.order">
+              <tr md-row>
+                <th md-column md-order-by="id"><span>#</span></th>
+                <th md-column md-order-by="name"><span>Name</span></th>
+                <th md-column><span>VAT</span></th>
+                <th md-column md-order-by="addressnumber"><span>Address</span></th>
+                <th md-column md-order-by="city"><span>Projects</span></th>
+                <th md-column>
+                  <span>Actions</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody md-body>
+              <tr md-row ng-class="{'active-table-row': values.active}" md-select="values" md-auto-select="options.autoSelect" ng-repeat="value in companies_list | filter: filter.search | orderBy: query.order | limitTo: query.limit : (query.page -1) * query.limit">
+                <td md-cell>{{ companies_list.lastIndexOf(value) + 1}}</td>
+                <td md-cell>{{ value.name }}</td>
+                <td md-cell>{{ value.vat }}</td>
+                <td md-cell>{{ value.address }}</td>
+                <td md-cell>5 projects</td>
+                <td md-cell ng-controller="companiesActionsCtrl as ctrl" ng-cloak>
+                  <md-menu>
+                   <md-button aria-label="Open phone interactions menu" class="md-fab md-mini md-hue-2" ng-click="ctrl.openMenu($mdMenu, $event)">
+                     <md-icon md-font-icon="fas fa-pen"></md-icon>
+                   </md-button>
+                   <md-menu-content width="4">
+                     <md-menu-item>
+                       <md-button ng-click="ctrl.edit_company(value.name, value.vat, value.address)">
+                         <md-icon md-font-icon="fas fa-check fa-lg"></md-icon>
+                         Edit
+                       </md-button>
+                     </md-menu-item>
+                     <md-menu-divider></md-menu-divider>
+                     <md-menu-item>
+                       <md-button ng-click="ctrl.delete_company(value.vat)">
+                         <md-icon md-font-icon="fas fa-times fa-lg"></md-icon>
+                         Delete company
+                       </md-button>
+                     </md-menu-item>
+                   </md-menu-content>
+                 </md-menu>
+                </td>
+              </tr>
+            </tbody>
+            <caption class="small text-muted">Last update: <span am-time-ago="now.time | amParse:'YYYY.MM.DD HH:mm:ss'"></span></caption>
+          </table>
+        </md-table-container>
+
+        <md-table-pagination md-limit="query.limit" md-limit-options="limitOptions" md-page="query.page" md-total="{{ companies_list.length }}" md-page-select="options.pageSelect" md-boundary-links="options.boundaryLinks"></md-table-pagination>
+
+      </div>
+      <div class="float-right">
+        <a ui-sref="app.companies.new" class="btn btn-sm btn-info brd-rd5 float-right"><i class="fas fa-plus"></i> Add new</a>
+      </div>
+    </div>
+  </div>
+</div><!-- Panel Content -->

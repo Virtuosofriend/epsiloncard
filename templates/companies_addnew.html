@@ -1,0 +1,25 @@
+<div class="panel-content">
+  <div class="widget pad50-65">
+    <a ui-sref="app.companies" class="btn btn-secondary btn-sm mb-1"><i class="ion-android-arrow-back"></i></a>
+    <h3 class="text-center">Add new company</h3>
+    <form class="form-wrp mt-4" id="company-form" name="companyForm" ng-submit="addcompany()">
+      <fieldset>
+        <div class="row mrg20">
+          <div class="col-md-12">
+            <input class="brd-rd5 validate[required]" name="company-name" id="company-name" ng-model="formData.company_name" type="text" placeholder="Company name*" />
+            <span class="error-box"></span>
+          </div>
+          <div class="col-md-12">
+            <input class="brd-rd5 validate[required]" name="company-address" id="company-address" ng-model="formData.address" type="text" placeholder="Company address*" />
+            <span class="error-box"></span>
+          </div>
+          <div class="col-md-12">
+            <input class="brd-rd5 validate[required]" name="company-vat" id="company-vat" ng-model="formData.vat" type="text" placeholder="VAT Number*" />
+            <span class="error-box"></span>
+          </div>
+        </div>
+      </fieldset>
+      <button type="submit" class="btn btn-primary float-right">Create</button>
+    </form>
+  </div>
+</div>

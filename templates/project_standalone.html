@@ -1,0 +1,39 @@
+<div class="panel-content">
+  <a ui-sref="app.project" class="btn btn-sm btn-secondary mb-5"><i class="fas fa-caret-left"></i> Back</a>
+  <div class="widget pad0">
+      <div class="mail-setting-wrp">
+          <div class="row mrg">
+              <div class="col-md-4 col-sm-6 col-lg-4">
+                  <div class="mail-prf-opt">
+                      <div class="mail-usr">
+                          <h3>{{ projectName }} </h3>
+                          <span>Starts: {{ projectStarts | amDateFormat:'dddd, MMMM Do YYYY' }}</span>
+                          <span>Ends: {{ projectEnds | amDateFormat:'dddd, MMMM Do YYYY' }}</span>
+                      </div>
+                      <div class="mail-prf-inr">
+                        <div class="button-group">
+                            <a ui-sref="app.project.view.personnelExpenses" class="btn btn-sm btn-primary brd-rd5">
+                              <i class="fas fa-plus"></i> Personnel Expenses
+                            </a>
+                            <a ui-sref="app.project.view.generalExpenses" class="btn btn-sm btn-drk brd-rd5">
+                              <i class="fas fa-plus"></i> General Expenses
+                            </a>
+                        </div>
+                          
+                          <div class="mail-opt">
+                              <h3>Project Info</h3>
+                              <ul>
+                                  <li><a href="#" title=""><i class="fas fa-hashtag"></i>70/2016 </a></li>
+                                  <li><a href="#" title=""><i class="fas fa-euro-sign"></i> 91.500,00</a></li>
+                              </ul>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-md-8 col-sm-12 col-lg-8">
+                  <div ui-view="projectContainer"></div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div><!-- Panel Content -->

@@ -1,0 +1,123 @@
+<div class="email-composer pad40">
+        <div class="widget-title2">
+            <h4>Add Personnel Expenses</h4>
+            <a 
+            ui-sref="app.project.view({
+                    id: projectCase, 
+                    start_date: projectStarts, 
+                    end_date: projectEnds
+                })" 
+            class="btn btn-sm btn-danger float-right">
+            <i class="fas fa-times"></i> Close</a>
+        </div>
+        
+        <form class="form-wrp mt-2" name="projectForm" ng-submit="addEmployees()" ng-repeat="(employee, $index) in form">
+                <fieldset>
+                    <div class="row mrg20">
+                        <div class="col-12" ng-controller="getAvailableUsersCtrl">
+                            <div class="slct-bx mb-2">
+                                <select class="custom-select" 
+                                    ng-model="form[$index].user_id" 
+                                    ng-cloak
+                                >
+                                    <option value="" selected disabled>
+                                        Select User
+                                    </option>
+                                    <option ng-repeat="x in users" value="{{ x.uid }}">{{ x.name }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div 
+                            class="col-md-4 col-sm-4 col-lg-4" 
+                            format="YYYY-MM-DD" 
+                            start-view="decade" 
+                            moment-picker="form[$index].start_date"
+                        >
+                            <input 
+                                class="brd-rd5 validate[required]" 
+                                name="start-date" 
+                                id="start-date" 
+                                type="text" 
+                                ng-model="form[$index].start_date" 
+                                placeholder="Start Date*" 
+                                ng-model-options="{ updateOn: 'blur' }" 
+                            />
+                            <span class="error-box"></span>
+                        </div>
+                        <div 
+                            class="col-md-4 col-sm-4 col-lg-4" 
+                            format="YYYY-MM-DD" 
+                            start-view="decade" 
+                            moment-picker="form[$index].end_date"
+                        >
+                            <input 
+                                class="brd-rd5 validate[required]" 
+                                name="start-date" 
+                                id="start-date" 
+                                type="text" 
+                                ng-model="form[$index].end_date" 
+                                placeholder="End Date*" 
+                                ng-model-options="{ updateOn: 'blur' }" 
+                            />
+                            <span class="error-box"></span>
+                        </div>
+                        <div 
+                            class="col-md-4 col-sm-4 col-lg-4" 
+                            format="YYYY-MM-DD" 
+                            start-view="decade" 
+                            moment-picker="form[$index].receipt_date"
+                        >
+                            <input 
+                                class="brd-rd5 validate[required]" 
+                                name="start-date" 
+                                id="start-date" 
+                                type="text" 
+                                ng-model="form[$index].receipt_date" 
+                                placeholder="Receipt Date*" 
+                                ng-model-options="{ updateOn: 'blur' }" 
+                            />
+                            <span class="error-box"></span>
+                        </div>
+
+                        <div class="col-md-6 col-sm-6 col-lg-6">
+                            <input 
+                                class="brd-rd5 validate[required]" 
+                                name="case-number" 
+                                id="case-number" 
+                                type="number" 
+                                ng-model="form[$index].amount" 
+                                placeholder="Amount*" 
+                            />
+                            <span class="error-box"></span>
+                        </div>
+                        <div class="col-md-6 col-sm-6 col-lg-6">
+                                <input 
+                                    class="brd-rd5 validate[required]" 
+                                    name="case-number" 
+                                    id="case-number" 
+                                    type="number" 
+                                    ng-model="form[$index].vat" 
+                                    placeholder="Vat*" 
+                                />
+                                <span class="error-box"></span>
+                        </div>
+                        
+                      </div>
+                      <div class="row mrg20">
+                        <div class="col-md-12 col-sm-12 col-lg-12">
+                            <textarea 
+                                class="brd-rd5 validate[required]" 
+                                name="description" 
+                                id="description" 
+                                ng-model="form[$index].description" 
+                                placeholder="Description*" 
+                            />
+                            <span class="error-box"></span>
+                        </div>
+                        
+                      </div>
+                    
+                  <button type="submit" class="btn btn-primary float-right">Save Expenses</button>
+                </fieldset>
+            </form>
+    </div>

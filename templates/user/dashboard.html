@@ -1,0 +1,68 @@
+<div class="row grid-wrap mrg20">
+
+  <div class="col-md-12 grid-item col-sm-12">
+    <div class="widget sales-summ pad50-40 work-start" ng-if="!work && !allocate">
+      <i class="fas fa-rocket"></i>
+      <h4 class="widget-title">Day begins</h4>
+      <button ng-click="start()" class="btn btn-primary">Start</button>
+    </div>
+    <div class="widget sales-summ pad50-40 work-end" ng-if="work && !allocate">
+      <i class="fas fa-flag-checkered"></i>
+      <h4 class="widget-title">Day ends</h4>
+      <button ng-click="stop()" class="btn btn-danger">Finish</button>
+    </div>
+    <div class="widget sales-summ pad50-40 work-end" ng-if="!work && allocate">
+      <i class="fas fa-flag-checkered"></i>
+      <h4 class="widget-title">Allocate your time</h4>
+      <p>
+        Fill the table below for each project you have worked today. Allocate your hours and minutes to reach your daily quota of <strong>{{ allocate_time.hours }} hours</strong> and <strong>{{ allocate_time.minutes }} minutes</strong>.
+      </p>
+        <table class="table table-hover mb-5">
+          <thead>
+              <tr>
+                  <th>#</th>
+                  <th>Project</th>
+                  <th>Professional time <small class="d-block">hrs</small></th>
+                  <th>Professional time <small class="d-block">mins</small></th>
+                  <th>
+                    Comments
+                  </th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr ng-repeat="value in employee_projects track by $index">
+                  <th scope="row">{{ employee_projects.indexOf(value) + 1}}</th>
+                  <td>{{ value.full_project_name }}</td>
+                  <td>
+                    <form class="form-wrp" ng-init="formData[value.case_number].project_id = value.case_number">
+                      <input class="brd-rd5" name="work-hours" id="work-hours" type="number" placeholder="Daily hours " ng-model="formData[value.case_number].hours" ng-change="checkthehours(value.case_number, formData[value.case_number].hours)" max="{{ formData[value.case_number].hours + (allocate_time.hours - total_time.hours) }}" min="0" />
+                    </form>
+                  </td>
+                  <td>
+                    <form class="form-wrp">
+                      <input class="brd-rd5" name="work-mins" id="work-mins" type="number" placeholder="Daily minutes" ng-model="formData[value.case_number].minutes" max="60" min="0" ng-change="checktheminutes(value.case_number, formData[value.case_number].minutes)" />
+                      <input class="brd-rd5 d-none" name="work-time" id="work-time" type="number" placeholder="total" ng-model="formData[value.case_number].time = formData[value.case_number].minutes*60 + formData[value.case_number].hours*3600" />
+                    </form>
+                  </td>
+                  <td>
+                    <form class="form-wrp">
+                      <input class="brd-rd5" name="work-mins" id="work-comments" type="text" placeholder="Your comments" ng-model="formData[value.case_number].description" ng-init="formData[value.case_number].description = ''" />
+                    </form>
+                  </td>
+              </tr>
+          </tbody>
+        </table>
+
+        <div class="error-message">
+          <h6 class="text-center">
+            <span ng-if="allocate_time.hours - total_time.hours > 0 || allocate_time.minutes - total_time.minutes > 0">You have to allocate {{ allocate_time.hours - total_time.hours }}hrs & {{ allocate_time.minutes - total_time.minutes }} minutes</span>
+            <span ng-if="allocate_time.hours - total_time.hours == 0 && allocate_time.minutes - total_time.minutes == 0">Awesome! Now click the finalize button below.</span>
+          </h6>
+          <p ng-show="errormessage" class="text-center">
+            Your allocated time does not match your recorded time. Please correct it and try again.
+          </p>
+        </div>
+      <button ng-click="finalizeday()" class="btn btn-success d-block">Finalize</button>
+    </div>
+  </div>
+</div><!-- Filter Items -->

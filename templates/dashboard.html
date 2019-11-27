@@ -1,0 +1,6 @@
+<div class="panel-content">
+  <div class="filter-items">
+    <admin-dashboard-tpl ng-if="user.type === 'admin'"></admin-dashboard-tpl>
+    <user-dashboard-tpl ng-if="user.type != 'admin'"></user-dashboard-tpl>
+  </div>
+</div><!-- Panel Content -->

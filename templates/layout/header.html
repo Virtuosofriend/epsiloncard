@@ -1,0 +1,44 @@
+<div class="topbar" id="login">
+  <div class="logo">
+    <h1><a ui-sref="app" title=""><img src="images/logo.png" alt="" /></a></h1>
+  </div>
+  <div class="topbar-data">
+    <toaster-container toaster-options="{'time-out': 2500}"></toaster-container>
+  </div>
+  <div class="topbar-bottom-colors">
+    <i style="background-color: #2c3e50;"></i>
+    <i style="background-color: #9857b2;"></i>
+    <i style="background-color: #2c81ba;"></i>
+    <i style="background-color: #5dc12e;"></i>
+    <i style="background-color: #feb506;"></i>
+    <i style="background-color: #e17c21;"></i>
+    <i style="background-color: #bc382a;"></i>
+  </div>
+</div><!-- Topbar -->
+
+<header class="side-header light-skin expand-header" ng-cloak>
+  <div class="nav-head">Menu</div>
+  <nav class="custom-scrollbar" ng-if="user.type === 'admin'">
+    <ul class="drp-sec">
+      <li><a ui-sref="app"><i class="ion-home"></i> Home</a></li>
+      <li><a ui-sref="app.project"><i class="ion-android-clipboard"></i> Projects</a></li>
+      <li><a ui-sref="app.companies"><i class="ion-briefcase"></i> Companies</a></li>
+      <li><a ui-sref="app.users"><i class="ion-android-contact"></i> Users</a></li>
+      <li><a href="standalone.html" title=""><i class="ion-ios-help"></i> Help</a></li>
+    </ul>
+  </nav>
+  <nav class="custom-scrollbar" ng-if="user.type != 'admin'">
+    <ul class="drp-sec">
+      <li><a ui-sref="app"><i class="ion-home"></i> Home</a></li>
+      <li ng-controller="logoutController"><a ng-click="logout()" class="click"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+    </ul>
+  </nav>
+</header><!-- Side Header -->
+
+<div class="pg-tp">
+    <i class="ion-cube"></i>
+    <div class="pr-tp-inr">
+        <h4>Welcome to <strong>Epsilon</strong><span></span> Project management</h4>
+        <span> {{ user.name }}, today is {{ now.date | amUtc | amDateFormat:'dddd, DD MMMM YYYY'}} </span>
+    </div>
+</div><!-- Page Top -->
