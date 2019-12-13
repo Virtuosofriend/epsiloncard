@@ -111,7 +111,7 @@ class TimecardBackend {
             
             
             foreach ($fixedArgs->expenses as $expense) {
-                $tmpValues = "( '{$fixedArgs->case_number}', '{$expense["description"]}', {$expense["amount"]}, {$expense["vat"]}, '{$expense["date"]}'),";
+                $tmpValues = "( '{$fixedArgs->case_number}', '{$expense->description}', {$expense->amount}, {$expense->vat}, '{$expense->date}'),";
                 $values .= $tmpValues;
             }
             $values = substr($values, 0, strlen($values)-1);
@@ -513,7 +513,29 @@ class TimecardBackend {
             $this->echoFailedAuthenticationResponse();
     }
     
-    
+    function getAllEmployeesProjects(&$args) {
+        $fixedArgs = $this->fixArguments($args);
+        if ($this->verifyAdmin($fixedArgs->user_id, $fixedArgs->session_id, $fixedArgs->type) === true) {
+            $query = "SELECT ARRAY_TO_JSON(ARRAY_AGG(proj)) response FROM (
+            SELECT json_build_object('user_id', user_id, 'projects', ARRAY_TO_JSON(ARRAY_AGG(project_id)) ) proj FROM admin.project_user
+            GROUP BY user_id
+            )a";
+           
+            $result = $this->pgConn->fetchRawQueryResult($query);
+            $response = "";
+            if (pg_affected_rows($result) == 1) {
+                $row = pg_fetch_assoc($result); 
+                if ($row["response"] ==null)
+                    $row["response"] = "null";
+                $response =  '{"status":"success", "data":' .$row["response"] .'}';
+            }
+            else 
+                $response =  '{"status":"error", "message":"Employee is not associated with any projects"}';
+            $this->echoResponse($response);
+          }
+          else
+            $this->echoFailedAuthenticationResponse();
+    }
     
     function getCompanyOverheads(&$args) {
         $fixedArgs = $this->fixArguments($args);
@@ -565,13 +587,13 @@ class TimecardBackend {
         $fixedArgs = $this->fixArguments($args);
         if ($this->verifyAdmin($fixedArgs->user_id, $fixedArgs->session_id, $fixedArgs->type) === true) {
             $query = "WITH user_info AS(
-	SELECT a.case_number, c.uid, c.name, ROUND(SUM(EXTRACT(EPOCH FROM e.end_date - e.start_date)/3600)::numeric,1) work_hours
+	SELECT a.case_number, c.uid, c.name--, ROUND(SUM(EXTRACT(EPOCH FROM e.end_date - e.start_date)/3600)::numeric,1) work_hours
     FROM admin.project a
     JOIN admin.project_user b ON a.case_number = b.project_id AND a.case_number = '{$fixedArgs->case_number}'
     JOIN customers_auth c ON b.user_id = c.uid
     LEFT JOIN employees.work_day_project d ON a.case_number = d.project_id
-    LEFT JOIN employees.work_day e ON c.uid = e.user_id AND e.start_date BETWEEN '{$fixedArgs->start_date}' AND '{$fixedArgs->end_date}'				
-    WHERE e.id IS NOT NULL AND e.end_date IS NOT NULL
+    --LEFT JOIN employees.work_day e ON c.uid = e.user_id AND e.start_date BETWEEN '{$fixedArgs->start_date}' AND '{$fixedArgs->end_date}'				
+    --WHERE e.id IS NOT NULL AND e.end_date IS NOT NULL
     GROUP BY a.case_number, c.uid, c.name
 ),personnel_expense_detail AS(
 	SELECT user_id, sum(amount) salary, sum(vat) vat
@@ -581,7 +603,7 @@ class TimecardBackend {
 	SELECT sum(salary) amount, sum(vat) vat  FROM personnel_expense_detail
 ),total_user_info AS(
 	SELECT ARRAY_TO_JSON(ARRAY_AGG(
-		json_build_object ('name', b.name, 'total_work_hours', c.work_hours, 'salary', d.salary, 'vat', d.vat ) ORDER BY b.name)) user_info
+		json_build_object ('name', b.name, /*'total_work_hours', c.work_hours,*/ 'salary', d.salary, 'vat', d.vat ) ORDER BY b.name)) user_info
 	FROM admin.project_user a
 	JOIN customers_auth b ON a.user_id = b.uid AND a.project_id = '{$fixedArgs->case_number}'
 	LEFT JOIN user_info c ON a.user_id = c.uid
@@ -624,6 +646,7 @@ FULL JOIN income d ON true
 FULL JOIN expense_detail_json e ON true
 FULL JOIN income_detail_json f ON true
 FULL JOIN personel_expense g ON true;";
+#print $query;
              $result = $this->pgConn->fetchRawQueryResult($query);
             $response = "";
             if (pg_affected_rows($result) == 1) {
@@ -712,8 +735,6 @@ FULL JOIN personel_expense g ON true;";
             $this->getAvailableEmployees($args);
         else if ($args->action =="geteoverheads")
              $this->getAvailableOverheadExpenses($args);
-        else if ($args->action == "addexpensetoproject")
-             $this->addExpenseToProject($args);
         else if ($args->action == "addgeneralcompanyexpenses")
              $this->addGeneralExpenseToCompany($args);
         else if ($args->action == "getcompanyoverheads")
@@ -738,14 +759,16 @@ FULL JOIN personel_expense g ON true;";
             $this->addExpenseToProject($args);
         else if ($args->action == "getemployeeprojectsbyadmin")
             $this->getEmployeeAvailableProjectsByAdmin($args);
+        else if ($args->action == "getallemployeesprojects")
+            $this->getAllEmployeesProjects($args);
         
     }
 }
 
-/*
-$config = "config.json";
-$obj = new TimecardBackend($config);
-*/
+
+#$config = "config.json";
+#$obj = new TimecardBackend($config);
+
 
 #$addCompanyArgs = (object) [ "action" =>"addcompany",  "user_id" => 3, "session_id" => 'vrtmsup2ea3e1ui36f5dftt4sg', "type" => "admin", "company_name"=> "EPSILON Malta Limited", "vat" => "11111111", "address" => "paparies"];
 #$obj->addCompany($addCompanyArgs);
@@ -792,7 +815,8 @@ $obj = new TimecardBackend($config);
 #$getAvailableProjectExpensesArgs = (object) ["action" => "getprojectexpenses", "user_id" => 3, "session_id" => 'vrtmsup2ea3e1ui36f5dftt4sg', "type" => "admin"];
 #$obj->getAvailableProjectExpenses($getAvailableProjectExpensesArgs);
 
-#$addExpenseToProjectArgs = (object) ["action" => "addexpensetoproject", "user_id" => 3, "session_id" => 'vrtmsup2ea3e1ui36f5dftt4sg', "type" => "admin", "case_number" => "0001", "expenses" => [["amount" => 1000, "vat"=>240, "date" =>  "2018-01-03 00:00:00", "description" => "Ταξίδι ΑΑ σε Ταϋλάνδη" ], [ "amount" => 200, "vat" => 100, "date" =>  "2018-01-05 00:00:00", "description" => "server gtpk" ]]];
+#$addExpenseToProjectArgs = '{"type":"admin","user_id":4,"session_id":"3ddbe4fef865f2b47bce535fc645291b","action":"addexpensetoproject","case_number":"1337","expenses":[{"date":"2019-12-04","amount":4500,"vat":1200,"description":"Purchasing goods"}]}';
+#$addExpenseToProjectArgs = json_decode($addExpenseToProjectArgs);
 #$obj->addExpenseToProject($addExpenseToProjectArgs);
 /*
 $addPersonnelExpenseToProjectArgs = (object) ["action" => "addpersonnelexpensetoproject", "user_id" => 3, "session_id" => 'vrtmsup2ea3e1ui36f5dftt4sg', "type" => "admin", "case_number" => "1604", "expenses" => [
@@ -830,7 +854,7 @@ $obj->addEmployeeExpenseToProject($addPersonnelExpenseToProjectArgs);
 #$endEmployeeWorkArgs =  (object) ["action" => "endwork", "user_id" => 5, "session_id" => 'mvco7djooe3jki08rsf4f0pisf', "type" => "l1", "end_date" =>  "2019-05-01 15:00:00", "work_day_id" => 8, "work_projects" => [  ["project_id" => "1604", "time" => "10800", "description" => "malakies"], ["project_id" => 1704, "time" => "7200", "description" => "alles malakies"] ]];
 #$obj->endEmployeeWork($endEmployeeWorkArgs);
 
-#$getProjectInfoArgs = (object) ["action" => "getprojectinfo", "user_id" => 3, "session_id" => 'vrtmsup2ea3e1ui36f5dftt4sg', "type" => "admin",  "case_number" => "1704", "start_date" => '2018-01-01 00:00:00', "end_date" => '2019-01-01 00:00:00'];
+#$getProjectInfoArgs = (object) ["action" => "getprojectinfo", "user_id" => 3, "session_id" => 'vrtmsup2ea3e1ui36f5dftt4sg', "type" => "admin",  "case_number" => "1337", "start_date" => '2018-01-01 00:00:00', "end_date" => '2020-01-01 00:00:00'];
 #$obj->getProjectInfo($getProjectInfoArgs);
 #print("\nhere\n");
 
@@ -838,7 +862,10 @@ $obj->addEmployeeExpenseToProject($addPersonnelExpenseToProjectArgs);
 $getEmployeeAvailableProjectsByAdminArgs = (object) ["action" => "getemployeeprojectsbyadmin","user_id" => 3, "session_id" => 'vrtmsup2ea3e1ui36f5dftt4sg', "type" => "admin", "request_user_id" => 5];
 $obj->getEmployeeAvailableProjectsByAdmin($getEmployeeAvailableProjectsByAdminArgs);
 */
-
+/*
+$getAllEmployeeAvailableProjectsArgs = (object) ["action" => "getallemployeesprojects","user_id" => 3, "session_id" => 'vrtmsup2ea3e1ui36f5dftt4sg', "type" => "admin"];
+$obj->getAllEmployeesProjects($getAllEmployeeAvailableProjectsArgs);
+*/
 /*
 echo json_encode($addCompanyArgs) ."\n";
 echo json_encode($deleteCompanyArgs) ."\n";

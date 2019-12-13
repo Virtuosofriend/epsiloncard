@@ -15,6 +15,7 @@ mainapp.controller("loginCtrl", ['$scope', '$rootScope', '$state', 'fetchUserLog
       customer: customer
     }).then(function(results) {
       if (results.status == "success") {
+        localStorage.sessionId = results.session_id;
         $state.go("app", {
           user_id: results.uid
         });

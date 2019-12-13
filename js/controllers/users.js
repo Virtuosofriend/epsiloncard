@@ -31,8 +31,8 @@ mainapp.controller("usersCtrl",
     function ($scope, $rootScope, $state, fetchUsers, addToProjectUser, fetchProjects,toaster,$timeout,removeFromProjectUser) {
     
     let actions = $scope.$resolve.auth;
-    
-    var vm = this;
+    let projects = $scope.$resolve.projects;
+
     $scope.now = {
     time: new Date(),
     date: moment()
@@ -49,23 +49,32 @@ mainapp.controller("usersCtrl",
   let objectFetchUsers = actions;
   objectFetchUsers["action"] = "getavailableemployees";
   
-  let assignProjectsToUsers = (userID) => {
-    let objectFetchProjects = actions;
-    objectFetchProjects["action"] = "getemployeeprojectsbyadmin";
-    objectFetchProjects["request_user_id"] = userID;
-    console.log(userID);
-    
-    fetchUsers.getData(objectFetchProjects).then(function (response) {
-      console.log(response.data.data);
-    });
-  };
-
   fetchUsers.getData(objectFetchUsers).then(function (response) {
     $scope.users = response.data.data;
+    let objectFetchProjects = actions;
+    objectFetchProjects["action"] = "getallemployeesprojects";
     
-    for(let user of $scope.users) {
-      assignProjectsToUsers(user.uid);
-    }
+    fetchUsers.getData(objectFetchProjects).then(function (response) {
+      let projectsEmployees = response.data.data;
+
+      for (let project of projectsEmployees) {
+        $scope.users.filter((element, index) => {
+          if (element.uid == project.user_id) {
+            // element.projects = project.projects;
+            element.projects = [];            
+            for (let newValue of project.projects) {
+              let projectName = projects.find(element => {
+                if (element.case_number == newValue) {
+                  let result = element.full_project_name;
+                  return result;
+                }
+              });         
+             element.projects.push(projectName);
+            }
+          }
+        });        
+      }
+    });
   });
 
 
@@ -223,11 +232,8 @@ mainapp.controller("searchProjCtrl", ['$scope', '$rootScope', '$element', 'fetch
 
   let actions = $scope.$resolve.auth;
   actions["action"] = "getprojects";
-  console.log(actions);
   
-  fetchProjects.getData(actions).then(function (response) {
-    console.log(response.data);
-    
+  fetchProjects.getData(actions).then(function (response) {    
     vm.availableItems = response.data.data;
   });
 

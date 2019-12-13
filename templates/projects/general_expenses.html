@@ -11,22 +11,22 @@
             <i class="fas fa-times"></i> Close</a>
         </div>
         
-        <form class="form-wrp mt-2" name="projectForm" ng-submit="addExpenses()" ng-repeat="(employee, $index) in form">
+        <form class="form-wrp mt-2" name="projectForm" ng-submit="addgenExpenses()" ng-repeat="(employee, $index) in expensesForm">
                 <fieldset>
                     <div class="row mrg20">
                         <div 
                             class="col-md-4 col-sm-4 col-lg-4" 
                             format="YYYY-MM-DD" 
                             start-view="decade" 
-                            moment-picker="expensesForm[$index].start_date"
+                            moment-picker="expensesForm[$index].date"
                         >
                             <input 
                                 class="brd-rd5 validate[required]" 
-                                name="start-date" 
-                                id="start-date" 
+                                name="date" 
+                                id="date" 
                                 type="text" 
-                                ng-model="expensesForm[$index].start_date" 
-                                placeholder="Start Date*" 
+                                ng-model="expensesForm[$index].date" 
+                                placeholder="Date*" 
                                 ng-model-options="{ updateOn: 'blur' }" 
                             />
                             <span class="error-box"></span>
