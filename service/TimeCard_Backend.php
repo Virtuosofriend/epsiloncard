@@ -111,7 +111,7 @@ class TimecardBackend {
             
             
             foreach ($fixedArgs->expenses as $expense) {
-                $tmpValues = "( '{$fixedArgs->case_number}', '{$expense["description"]}', {$expense["amount"]}, {$expense["vat"]}, '{$expense["date"]}'),";
+                $tmpValues = "( '{$fixedArgs->case_number}', '{$expense->description}', {$expense->amount}, {$expense->vat}, '{$expense->date}'),";
                 $values .= $tmpValues;
             }
             $values = substr($values, 0, strlen($values)-1);
@@ -815,7 +815,8 @@ FULL JOIN personel_expense g ON true;";
 #$getAvailableProjectExpensesArgs = (object) ["action" => "getprojectexpenses", "user_id" => 3, "session_id" => 'vrtmsup2ea3e1ui36f5dftt4sg', "type" => "admin"];
 #$obj->getAvailableProjectExpenses($getAvailableProjectExpensesArgs);
 
-#$addExpenseToProjectArgs = (object) ["action" => "addexpensetoproject", "user_id" => 3, "session_id" => 'vrtmsup2ea3e1ui36f5dftt4sg', "type" => "admin", "case_number" => "1337", "expenses" => [["amount" => 1000, "vat"=>240, "date" =>  "2018-01-03 00:00:00", "description" => "Ταξίδι ΑΑ σε Ταϋλάνδη" ], [ "amount" => 200, "vat" => 100, "date" =>  "2018-01-05 00:00:00", "description" => "server gtpk" ]]];
+#$addExpenseToProjectArgs = '{"type":"admin","user_id":4,"session_id":"3ddbe4fef865f2b47bce535fc645291b","action":"addexpensetoproject","case_number":"1337","expenses":[{"date":"2019-12-04","amount":4500,"vat":1200,"description":"Purchasing goods"}]}';
+#$addExpenseToProjectArgs = json_decode($addExpenseToProjectArgs);
 #$obj->addExpenseToProject($addExpenseToProjectArgs);
 /*
 $addPersonnelExpenseToProjectArgs = (object) ["action" => "addpersonnelexpensetoproject", "user_id" => 3, "session_id" => 'vrtmsup2ea3e1ui36f5dftt4sg', "type" => "admin", "case_number" => "1604", "expenses" => [
