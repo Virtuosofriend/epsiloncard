@@ -282,7 +282,7 @@ mainapp.controller("individualProjectCtrl", [
       let obj = actions;
       obj.action = "addpersonnelexpensetoproject";
       obj["case_number"] = $scope.projectCase;
-      obj.expenses = $scope.expensesForm;
+      obj.expenses = $scope.expensesGenform;
       
       individualProject.getData(obj).then(function(response) {
         if (response.status === 200) {
