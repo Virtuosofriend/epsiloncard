@@ -301,7 +301,7 @@ mainapp.controller("userShift", ['$scope', '$rootScope', 'startWorkinProject','s
         $scope.work = !$scope.work;
         $scope.allocate = !$scope.allocate;
         actions["action"] = "getemployeeprojects";
-        employeeProjects.getData(obj).then(function (response) {
+        employeeProjects.getData(actions).then(function (response) {
           $scope.employee_projects = response.data.data;
 
           $scope.finalizeday = function () {
