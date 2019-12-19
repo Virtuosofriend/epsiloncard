@@ -3,7 +3,7 @@
  * Database configuration
  */
 
-$cfg = "/home/dsakellariou/Projects/epsilon/authenticate/api/config.json";
+$cfg = "/home/dimitris/Projects/epsilon/authenticate/api/config.json";
 $config = json_decode(file_get_contents($cfg));
 
 define('DB_USERNAME', $config->db->user);
