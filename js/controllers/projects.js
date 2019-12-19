@@ -229,17 +229,18 @@ mainapp.controller("projectsCtrl", ['$scope', '$state','fetchProjects', function
 
 mainapp.controller("individualProjectCtrl", [
   '$scope', 
-  '$rootScope', 
   '$state',
+  '$timeout',
   'individualProject',
-  'fetchUsers', function ($scope, $rootScope, $state,individualProject, fetchUsers) {
+  'toaster',
+  'fetchUsers', function ($scope,$state,$timeout,individualProject, toaster, fetchUsers) {
     
     $scope.projectName = $state.params.name;
     $scope.projectStarts = $state.params.start_date;
     $scope.projectEnds = $state.params.end_date;
     $scope.projectCase = $state.params.id;
     let actions = $scope.$resolve.auth;
-    $scope.form = [{}];
+    $scope.expensesGenform = [{}];
     $scope.expensesForm = [{}];
 
     let projectObj = actions;
@@ -252,7 +253,24 @@ mainapp.controller("individualProjectCtrl", [
     individualProject.getData(projectObj).then(function(response) {
       if (response.status === 200) {
         $scope.currentProject = response.data.data;
-        console.log($scope.currentProject)          
+        $scope.personnel = response.data.data.personnel_detail;
+        $scope.generalExpenses = response.data.data.expense_detail;
+        console.log(response.data.data);
+        
+        let fetchingUsers = $scope.$resolve.auth;
+        fetchingUsers["action"] = "getavailableusers";
+        fetchUsers.getData(fetchingUsers).then(function(response) {
+          $scope.personnel = $scope.personnel.map(elem => {
+            let name = elem.name;
+            let final = response.data.data.find(elem => {
+              if (elem.name == name) {
+                return elem.uid;
+              }
+            });
+            elem.userID = final.uid;
+            return elem;
+          });          
+        }); 
       }
     
     });
@@ -260,52 +278,61 @@ mainapp.controller("individualProjectCtrl", [
 
     // Adding Fns
 
-    $scope.addEmployees = function(e) {      
+    $scope.addEmployees = function(e) {
       let obj = actions;
       obj.action = "addpersonnelexpensetoproject";
       obj["case_number"] = $scope.projectCase;
-      obj.expenses = $scope.expensesForm;
-      console.log(obj);
+      obj.expenses = $scope.expensesGenform;
+      
       individualProject.getData(obj).then(function(response) {
-        console.log(response);
-  
+        if (response.status === 200) {
+          toaster.pop({
+            type: 'success',
+            title: success('added'),
+            onShowCallback: function () {
+              $timeout(function () {
+                $state.reload();
+              },1000)
+            }
+          });
+        } else {
+          toaster.pop({
+            type: 'error',
+            title: error(),
+            onShowCallback: function () {
+              $state.go("app");
+            }
+          });
+        }
       });
     };
 
-    $scope.addEmployees = function(e) {      
+    $scope.addgenExpenses = function(e) {
       let obj = actions;
       obj.action = "addexpensetoproject";
       obj["case_number"] = $scope.projectCase;
-      obj.expenses = $scope.form;
-      console.log(obj);
+      obj.expenses = $scope.expensesForm;
       individualProject.getData(obj).then(function(response) {
-        console.log(response);
-  
+        if (response.status === 200) {
+          toaster.pop({
+            type: 'success',
+            title: success('added'),
+            onShowCallback: function () {
+              $timeout(function () {
+                $state.reload();
+              },1000)
+            }
+          });
+        } else {
+          toaster.pop({
+            type: 'error',
+            title: error(),
+            onShowCallback: function () {
+              $state.go("app");
+            }
+          });
+        }
       });
     };
-
     
-    /*
-    {
-  "personel": {
-    "amount": 123,
-    "vat": 13123
-  },
-  "expense": {
-    "amount": null,
-    "vat": null
-  },
-  "overhead": {
-    "amount": null,
-    "vat": null
-  },
-  "income": {
-    "amount": null,
-    "income": null
-  },
-  "personnel_detail": null,
-  "expense_detail": null,
-  "income_detail": null
-}
-*/
 }]);

@@ -11,19 +11,19 @@
             <i class="fas fa-times"></i> Close</a>
         </div>
         
-        <form class="form-wrp mt-2" name="projectForm" ng-submit="addEmployees()" ng-repeat="(employee, $index) in form">
+        <form class="form-wrp mt-2" name="projectForm" ng-submit="addEmployees()" ng-repeat="(employee, $index) in expensesForm">
                 <fieldset>
                     <div class="row mrg20">
-                        <div class="col-12" ng-controller="getAvailableUsersCtrl">
+                        <div class="col-12">
                             <div class="slct-bx mb-2">
                                 <select class="custom-select" 
-                                    ng-model="form[$index].user_id" 
+                                    ng-model="expensesGenform[$index].user_id" 
                                     ng-cloak
                                 >
                                     <option value="" selected disabled>
                                         Select User
                                     </option>
-                                    <option ng-repeat="x in users" value="{{ x.uid }}">{{ x.name }}</option>
+                                    <option ng-repeat="x in personnel" value="{{ x.userID }}">{{ x.name }}</option>
                                 </select>
                             </div>
                         </div>
@@ -31,14 +31,14 @@
                             class="col-md-4 col-sm-4 col-lg-4" 
                             format="YYYY-MM-DD" 
                             start-view="decade" 
-                            moment-picker="form[$index].start_date"
+                            moment-picker="expensesGenform[$index].start_date"
                         >
                             <input 
                                 class="brd-rd5 validate[required]" 
                                 name="start-date" 
                                 id="start-date" 
                                 type="text" 
-                                ng-model="form[$index].start_date" 
+                                ng-model="expensesGenform[$index].start_date" 
                                 placeholder="Start Date*" 
                                 ng-model-options="{ updateOn: 'blur' }" 
                             />
@@ -48,14 +48,14 @@
                             class="col-md-4 col-sm-4 col-lg-4" 
                             format="YYYY-MM-DD" 
                             start-view="decade" 
-                            moment-picker="form[$index].end_date"
+                            moment-picker="expensesGenform[$index].end_date"
                         >
                             <input 
                                 class="brd-rd5 validate[required]" 
                                 name="start-date" 
                                 id="start-date" 
                                 type="text" 
-                                ng-model="form[$index].end_date" 
+                                ng-model="expensesGenform[$index].end_date" 
                                 placeholder="End Date*" 
                                 ng-model-options="{ updateOn: 'blur' }" 
                             />
@@ -65,14 +65,14 @@
                             class="col-md-4 col-sm-4 col-lg-4" 
                             format="YYYY-MM-DD" 
                             start-view="decade" 
-                            moment-picker="form[$index].receipt_date"
+                            moment-picker="expensesGenform[$index].receipt_date"
                         >
                             <input 
                                 class="brd-rd5 validate[required]" 
                                 name="start-date" 
                                 id="start-date" 
                                 type="text" 
-                                ng-model="form[$index].receipt_date" 
+                                ng-model="expensesGenform[$index].receipt_date" 
                                 placeholder="Receipt Date*" 
                                 ng-model-options="{ updateOn: 'blur' }" 
                             />
@@ -85,7 +85,7 @@
                                 name="case-number" 
                                 id="case-number" 
                                 type="number" 
-                                ng-model="form[$index].amount" 
+                                ng-model="expensesGenform[$index].amount" 
                                 placeholder="Amount*" 
                             />
                             <span class="error-box"></span>
@@ -96,7 +96,7 @@
                                     name="case-number" 
                                     id="case-number" 
                                     type="number" 
-                                    ng-model="form[$index].vat" 
+                                    ng-model="expensesGenform[$index].vat" 
                                     placeholder="Vat*" 
                                 />
                                 <span class="error-box"></span>
@@ -109,7 +109,7 @@
                                 class="brd-rd5 validate[required]" 
                                 name="description" 
                                 id="description" 
-                                ng-model="form[$index].description" 
+                                ng-model="expensesGenform[$index].description" 
                                 placeholder="Description*" 
                             />
                             <span class="error-box"></span>

@@ -25,6 +25,7 @@
       <li><a ui-sref="app.companies"><i class="ion-briefcase"></i> Companies</a></li>
       <li><a ui-sref="app.users"><i class="ion-android-contact"></i> Users</a></li>
       <li><a href="standalone.html" title=""><i class="ion-ios-help"></i> Help</a></li>
+      <li ng-controller="logoutController"><a ng-click="logout()" class="click"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
     </ul>
   </nav>
   <nav class="custom-scrollbar" ng-if="user.type != 'admin'">

@@ -31,8 +31,8 @@ mainapp.controller("usersCtrl",
     function ($scope, $rootScope, $state, fetchUsers, addToProjectUser, fetchProjects,toaster,$timeout,removeFromProjectUser) {
     
     let actions = $scope.$resolve.auth;
-    
-    var vm = this;
+    let projects = $scope.$resolve.projects;
+
     $scope.now = {
     time: new Date(),
     date: moment()
@@ -49,6 +49,7 @@ mainapp.controller("usersCtrl",
   let objectFetchUsers = actions;
   objectFetchUsers["action"] = "getavailableemployees";
   
+<<<<<<< HEAD
   let assignProjectsToUsers = (objectFetchProjects) => {
     
    
@@ -70,6 +71,34 @@ mainapp.controller("usersCtrl",
         console.log("here", user.uid);
       assignProjectsToUsers(objectFetchProjects);
     }
+=======
+  fetchUsers.getData(objectFetchUsers).then(function (response) {
+    $scope.users = response.data.data;
+    let objectFetchProjects = actions;
+    objectFetchProjects["action"] = "getallemployeesprojects";
+    
+    fetchUsers.getData(objectFetchProjects).then(function (response) {
+      let projectsEmployees = response.data.data;
+
+      for (let project of projectsEmployees) {
+        $scope.users.filter((element, index) => {
+          if (element.uid == project.user_id) {
+            // element.projects = project.projects;
+            element.projects = [];            
+            for (let newValue of project.projects) {
+              let projectName = projects.find(element => {
+                if (element.case_number == newValue) {
+                  let result = element.full_project_name;
+                  return result;
+                }
+              });         
+             element.projects.push(projectName);
+            }
+          }
+        });        
+      }
+    });
+>>>>>>> v1.1
   });
 
 
@@ -227,11 +256,8 @@ mainapp.controller("searchProjCtrl", ['$scope', '$rootScope', '$element', 'fetch
 
   let actions = $scope.$resolve.auth;
   actions["action"] = "getprojects";
-  console.log(actions);
   
-  fetchProjects.getData(actions).then(function (response) {
-    console.log(response.data);
-    
+  fetchProjects.getData(actions).then(function (response) {    
     vm.availableItems = response.data.data;
   });
 
@@ -258,13 +284,14 @@ mainapp.controller("userShift", ['$scope', '$rootScope', 'startWorkinProject','s
   $scope.formData = {};
   $scope.total_time = { "hours": 0, "minutes": 0 };
   $scope.errormessage = false;
-
+  console.log($scope.$resolve);
+  
   $scope.start = function () {
-    var obj = $rootScope.actions;
-    obj["action"] = "startwork";
-    startWorkinProject.getData(obj).then(function (response) {
+    let actions = $scope.$resolve.auth;
+    actions["action"] = "startwork";
+    startWorkinProject.getData(actions).then(function (response) {
       if (response.data.status === "success") {
-        obj["work_day_id"] = response.data.work_day_id;
+        actions["work_day_id"] = response.data.work_day_id;
           toaster.pop({
             type: 'success',
             title: success('user_start_work'),
@@ -277,9 +304,9 @@ mainapp.controller("userShift", ['$scope', '$rootScope', 'startWorkinProject','s
   };
 
   $scope.stop = function () {
-    var obj = $rootScope.actions;
-    obj["action"] = "checkstartemployeework";
-    stopWorkinProject.getData(obj).then(function (response) {
+    let actions = $scope.$resolve.auth;
+    actions["action"] = "checkstartemployeework";
+    stopWorkinProject.getData(actions).then(function (response) {
       if (response.data.status === "success") {
         var start_date = response.data.data.start_date;
         var day = response.data.data.id;
@@ -297,15 +324,15 @@ mainapp.controller("userShift", ['$scope', '$rootScope', 'startWorkinProject','s
         };
         $scope.work = !$scope.work;
         $scope.allocate = !$scope.allocate;
-        obj["action"] = "getemployeeprojects";
-        employeeProjects.getData(obj).then(function (response) {
+        actions["action"] = "getemployeeprojects";
+        employeeProjects.getData(actions).then(function (response) {
           $scope.employee_projects = response.data.data;
 
           $scope.finalizeday = function () {
             var tmp = Object.values($scope.formData);
-            obj["work_projects"] = tmp;
-            obj["action"] = "endwork";
-            obj["end_date"] = ending_date;
+            actions["work_projects"] = tmp;
+            actions["action"] = "endwork";
+            actions["end_date"] = ending_date;
 
             var total = {
               "hours": 0,
@@ -322,7 +349,7 @@ mainapp.controller("userShift", ['$scope', '$rootScope', 'startWorkinProject','s
             }
 
             if (total.hours == $scope.allocate_time.hours && total.minutes == $scope.allocate_time.minutes) {
-              finalizeWorkinProject.getData(obj).then(function (response) {
+              finalizeWorkinProject.getData(actions).then(function (response) {
                 if (response.data.status === "success") {
                   toaster.pop({
                     type: 'success',

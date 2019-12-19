@@ -70,16 +70,15 @@
                 <td md-cell>{{ value.created | amUtc | amDateFormat:'DD.MM.YYYY' }}</td>
                 <td md-cell>
                   <md-chips 
-                    ng-model="projectNames[$index]" 
+                    ng-model="value.projects" 
                     readonly="chips.readonly" 
                     md-removable="chips.removable" 
                     md-enable-chip-edit="chips.enable_edit"  
-                    md-on-remove="removeEmployee($chip, $index, $event, value.uid, $chip.project_id)"
+                    md-on-remove="removeEmployee($chip, $index, $event, value.uid, $chip.case_number)"
                   >
-                  <md-chip-template ng-if="$chip.project != null">
+                  <md-chip-template class="d-block">
                     <span>
-                        <strong>{{ $chip.project }}</strong>
-                        <em>({{ $chip.project_id }})</em>
+                        <strong>{{ $chip.full_project_name }}</strong>
                     </span>
                   </md-chip-template>
                 </md-chips>

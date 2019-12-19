@@ -43,9 +43,9 @@ mainapp.config(function($stateProvider, $urlRouterProvider) {
         "container@app": {
           templateUrl: "templates/dashboard.html",
         },
-        "footer": {
-          templateUrl: 'templates/layout/footer.html'
-        }
+        // "footer": {
+        //   templateUrl: 'templates/layout/footer.html'
+        // }
       },
       resolve: {
         auth: function(fetchUserLogin, $rootScope, $state) {
@@ -72,6 +72,16 @@ mainapp.config(function($stateProvider, $urlRouterProvider) {
               $state.go('login');
             }
           });
+        },
+        projects: function(auth,fetchProjects){
+          if(auth.type === "admin") {
+            let obj = auth;
+            obj.action = "getprojects";
+            return fetchProjects.getData(obj).then(function(response){
+              return response.data.data;
+            });
+          }
+          
         }
       }
     })
